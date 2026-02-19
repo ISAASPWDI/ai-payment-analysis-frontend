@@ -165,7 +165,7 @@ src/
 
 ```bash
 # 1. Entrar a la carpeta del frontend
-cd payment-frontend
+cd ai-payment-analysis-frontend
 
 # 2. Instalar dependencias
 npm install
