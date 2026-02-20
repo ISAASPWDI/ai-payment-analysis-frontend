@@ -1,219 +1,888 @@
-<div class="flex flex-col h-full bg-[#0d0d11]"
+<div
+  class="flex flex-col h-full bg-[#0d0d11]"
   (dragover)="$event.preventDefault(); dragging.set(true)"
   (dragleave)="dragging.set(false)"
-  (drop)="onDrop($event)">
+  (drop)="onDrop($event)"
+>
+  <!-- barra de arriba-->
+  <div
+    class="flex items-center justify-between px-4 py-4 border-b border-white/5"
+  >
+    <button
+      (click)="toggleLeft.emit()"
+      class="w-8 h-8 rounded-lg text-white hover:bg-white/5 flex items-center justify-center transition-colors shrink-0"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-panel-left-close h-4 w-4"
+      >
+        <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+        <path d="M9 3v18"></path>
+        <path d="m16 15-3-3 3-3"></path>
+      </svg>
+    </button>
 
-  <!-- Top bar -->
-  <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
+      <div
+        class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20"
+      >
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot h-5 w-5 text-primary"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg>
       </div>
       <div>
         <h1 class="text-sm font-semibold text-gray-100">DocAnalyst AI</h1>
         <div class="flex items-center gap-1.5 mt-0.5">
-          <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span class="text-[10px] text-gray-500">En línea</span>
+          <div
+            class="w-1.5 h-1.5 rounded-full animate-pulse"
+            [class]="extracting() ? 'bg-amber-400' : 'bg-emerald-400'"
+          ></div>
+          <span class="text-[10px] text-gray-500">
+            @if (extracting()) {
+              Extrayendo datos…
+            } @else if (selectedVoucher()) {
+              Contexto:
+              {{ selectedVoucher()!.payee || selectedVoucher()!.payer }}
+            } @else {
+              En línea
+            }
+          </span>
         </div>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <button class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors" title="Historial">
-        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </button>
-    </div>
+
+    <button
+      (click)="toggleRight.emit()"
+      class="w-8 h-8 rounded-lg text-white hover:bg-white/5 flex items-center justify-center transition-colors shrink-0"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-panel-right-close h-4 w-4"
+      >
+        <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+        <path d="M15 3v18"></path>
+        <path d="m8 9 3 3-3 3"></path>
+      </svg>
+    </button>
   </div>
 
-  <!-- Drag overlay -->
+  <!-- cuando un voucher es seleccionado-->
+  @if (selectedVoucher()) {
+    <div
+      class="mx-4 mt-3 px-4 py-2.5 bg-violet-500/8 border border-violet-500/20 rounded-xl flex items-center gap-3"
+    >
+      <div
+        class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center shrink-0"
+      >
+        <svg
+          class="w-3 h-3 text-violet-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[10px] text-violet-400 font-medium">
+          Comprobante activo
+        </p>
+        <p class="text-[11px] text-gray-300 truncate">
+          {{ selectedVoucher()!.payee || selectedVoucher()!.payer }} —
+          {{ selectedVoucher()!.currency }}
+          {{ selectedVoucher()!.amount | number: "1.2-2" }}
+        </p>
+      </div>
+      <span
+        class="shrink-0 text-[9px] font-semibold px-2 py-0.5 rounded-full border"
+        [class]="getStatusClass(selectedVoucher()!.status)"
+      >
+        {{ getStatusLabel(selectedVoucher()!.status) }}
+      </span>
+    </div>
+  }
+
+  <!-- arrastrar una imagen o archivo-->
   @if (dragging()) {
-    <div class="absolute inset-0 z-50 bg-violet-500/10 border-2 border-dashed border-violet-500/50 rounded-none flex items-center justify-center pointer-events-none">
+    <div
+      class="absolute inset-0 z-50 bg-violet-500/10 border-2 border-dashed border-violet-500/50 flex items-center justify-center pointer-events-none"
+    >
       <div class="text-center">
-        <div class="w-16 h-16 rounded-2xl bg-violet-500/20 flex items-center justify-center mx-auto mb-3">
-          <svg class="w-8 h-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        <div
+          class="w-16 h-16 rounded-2xl bg-violet-500/20 flex items-center justify-center mx-auto mb-3"
+        >
+          <svg
+            class="w-8 h-8 text-violet-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+            />
           </svg>
         </div>
-        <p class="text-sm font-medium text-violet-300">Suelta el comprobante aquí</p>
+        <p class="text-sm font-medium text-violet-300">
+          Suelta el comprobante aquí
+        </p>
       </div>
     </div>
   }
 
-  <!-- Messages -->
-  <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6 scrollbar-thin">
+  <!-- cuando se extrae la imagen, oes un overlay-->
+  @if (extracting()) {
+    <div
+      class="absolute inset-0 z-40 bg-[#0d0d11]/80 backdrop-blur-sm flex items-center justify-center"
+    >
+      <div class="text-center">
+        <div
+          class="w-14 h-14 rounded-2xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mx-auto mb-4"
+        >
+          <div
+            class="w-6 h-6 border-2 border-violet-500/30 border-t-violet-400 rounded-full animate-spin"
+          ></div>
+        </div>
+        <p class="text-sm font-medium text-gray-300">
+          Extrayendo datos del comprobante…
+        </p>
+        <p class="text-xs text-gray-600 mt-1">
+          Esto puede tardar unos segundos
+        </p>
+      </div>
+    </div>
+  }
 
+  <!-- ── modal cuando se envia los datos al backend-->
+  @if (validationMode() && draftData()) {
+    <div class="absolute inset-0 z-50 flex items-stretch bg-[#0a0a0e]">
+      <!-- LEFT: file preview -->
+      <div class="w-1/2 flex flex-col border-r border-white/8">
+        <div
+          class="flex items-center justify-between px-5 py-4 border-b border-white/5"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-3 h-3 text-violet-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </div>
+            <span class="text-xs font-medium text-gray-300"
+              >Previsualización</span
+            >
+          </div>
+          <span class="text-[10px] text-gray-600 truncate max-w-[140px]">{{
+            draftFileName()
+          }}</span>
+        </div>
+
+        <div
+          class="flex-1 overflow-auto flex items-center justify-center p-4 bg-[#080810]"
+        >
+          @if (isPdf()) {
+            <iframe
+              [src]="getDraftPreviewUrl()"
+              class="w-full h-full rounded-xl border border-white/5"
+              style="min-height: 400px"
+            ></iframe>
+          } @else {
+            <img
+              [src]="getDraftPreviewUrl()"
+              alt="Comprobante"
+              class="max-w-full max-h-full rounded-xl border border-white/5 object-contain shadow-2xl"
+            />
+          }
+        </div>
+
+
+        <div class="px-5 py-3 border-t border-white/5 flex items-center gap-3">
+          <span class="text-[10px] text-gray-600">Confianza del modelo</span>
+          <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+            <div
+              class="h-full rounded-full transition-all duration-700"
+              [class]="
+                draftData()!.confidence_score > 0.8
+                  ? 'bg-emerald-500'
+                  : draftData()!.confidence_score > 0.6
+                    ? 'bg-amber-500'
+                    : 'bg-red-500'
+              "
+              [style.width.%]="draftData()!.confidence_score * 100"
+            ></div>
+          </div>
+          <span
+            class="text-[10px] font-mono"
+            [class]="
+              draftData()!.confidence_score > 0.8
+                ? 'text-emerald-400'
+                : 'text-amber-400'
+            "
+          >
+            {{ (draftData()!.confidence_score * 100).toFixed(0) }}%
+          </span>
+        </div>
+      </div>
+
+      <!-- RIGHT: editable fields -->
+      <div class="w-1/2 flex flex-col">
+        <div
+          class="flex items-center justify-between px-5 py-4 border-b border-white/5"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-3 h-3 text-emerald-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </div>
+            <span class="text-xs font-medium text-gray-300"
+              >Validar datos extraídos</span
+            >
+          </div>
+          <button
+            (click)="showDraftRaw.set(!showDraftRaw())"
+            class="text-[9px] px-2.5 py-1 rounded-md border transition-colors"
+            [class]="
+              showDraftRaw()
+                ? 'bg-amber-400/10 border-amber-400/30 text-amber-400'
+                : 'bg-white/5 border-white/10 text-gray-500 hover:text-gray-300'
+            "
+          >
+            {{ showDraftRaw() ? "Ver campos" : "Ver JSON" }}
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4 scrollbar-thin">
+          @if (showDraftRaw()) {
+            <div class="bg-[#0a0a12] border border-amber-400/10 rounded-xl p-4">
+              <p
+                class="text-[9px] text-amber-400/60 uppercase tracking-wider mb-3"
+              >
+                Raw JSON extraído
+              </p>
+              <pre
+                class="text-[11px] text-amber-300/80 font-mono leading-relaxed whitespace-pre-wrap break-all"
+                >{{ formatJson(draftData()) }}</pre
+              >
+            </div>
+          } @else {
+            <div class="space-y-3">
+              <p class="text-[9px] text-gray-600 uppercase tracking-wider">
+                Revisa y corrige si es necesario
+              </p>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1"
+                  >Pagador / Emisor</label
+                >
+                <input
+                  type="text"
+                  [value]="draftData()!.payer"
+                  (input)="updateDraft('payer', $any($event.target).value)"
+                  class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1"
+                  >Receptor / Beneficiario</label
+                >
+                <input
+                  type="text"
+                  [value]="draftData()!.payee"
+                  (input)="updateDraft('payee', $any($event.target).value)"
+                  class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                />
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="col-span-2">
+                  <label class="block text-[10px] text-gray-500 mb-1"
+                    >Monto</label
+                  >
+                  <input
+                    type="text"
+                    [value]="draftData()!.amount"
+                    (input)="updateDraft('amount', $any($event.target).value)"
+                    class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors font-mono"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10px] text-gray-500 mb-1"
+                    >Moneda</label
+                  >
+                  <select
+                    [value]="draftData()!.currency"
+                    (change)="
+                      updateDraft('currency', $any($event.target).value)
+                    "
+                    class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                  >
+                    <option value="PEN">PEN</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1"
+                  >Fecha de pago</label
+                >
+                <input
+                  type="text"
+                  [value]="draftData()!.payment_date"
+                  (input)="
+                    updateDraft('payment_date', $any($event.target).value)
+                  "
+                  placeholder="DD/MM/YYYY"
+                  class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors font-mono"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1"
+                  >Banco / Entidad</label
+                >
+                <input
+                  type="text"
+                  [value]="draftData()!.bank_name"
+                  (input)="updateDraft('bank_name', $any($event.target).value)"
+                  class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1"
+                  >N° Operación / Referencia</label
+                >
+                <input
+                  type="text"
+                  [value]="draftData()!.reference_number"
+                  (input)="
+                    updateDraft('reference_number', $any($event.target).value)
+                  "
+                  class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors font-mono"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 mb-1"
+                  >Descripción / Concepto</label
+                >
+                <textarea
+                  rows="2"
+                  [value]="draftData()!.description"
+                  (input)="
+                    updateDraft('description', $any($event.target).value)
+                  "
+                  class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-violet-500/50 transition-colors resize-none"
+                ></textarea>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="px-5 py-4 border-t border-white/5 flex gap-2">
+          <button
+            (click)="cancelValidation()"
+            class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-gray-400 hover:text-gray-200 transition-all border border-white/8"
+          >
+            Cancelar
+          </button>
+          <button
+            (click)="confirmAndSave()"
+            [disabled]="confirmingFile()"
+            class="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2"
+            [class]="
+              confirmingFile()
+                ? 'bg-violet-600/50 text-violet-300 cursor-not-allowed'
+                : 'bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+            "
+          >
+            @if (confirmingFile()) {
+              <div
+                class="w-3.5 h-3.5 border-2 border-violet-300/30 border-t-violet-300 rounded-full animate-spin"
+              ></div>
+              Guardando…
+            } @else {
+              <svg
+                class="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Confirmar y Guardar
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- mensajes -->
+  <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6 scrollbar-thin">
     @if (chatState.messages().length === 0) {
       <div class="flex flex-col items-center justify-center h-full text-center">
-        <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-indigo-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
-          <svg class="w-9 h-9 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        <div
+          class="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-indigo-500/10 border border-violet-500/20 flex items-center justify-center mb-5"
+        >
+          <svg
+            class="w-9 h-9 text-violet-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
         </div>
-        <h3 class="text-base font-semibold text-gray-300 mb-2">DocAnalyst Agent</h3>
+        <h3 class="text-base font-semibold text-gray-300 mb-2">
+          DocAnalyst Agent
+        </h3>
         <p class="text-xs text-gray-600 max-w-xs leading-relaxed">
-          Envía un comprobante de pago para analizarlo, o escribe una consulta sobre tus registros.
+          @if (selectedVoucher()) {
+            Comprobante cargado. Puedes hacer preguntas sobre él.
+          } @else {
+            Envía un comprobante de pago para analizarlo, o escribe una consulta
+            sobre tus registros.
+          }
         </p>
         <div class="flex flex-wrap justify-center gap-2 mt-5">
-          @for (hint of ['Analiza este comprobante', 'Dame los insights', 'Buscar comprobantes banco BCP']; track hint) {
-            <button (click)="text.set(hint)"
-              class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all">
-              {{ hint }}
-            </button>
+          @if (selectedVoucher()) {
+            @for (
+              hint of [
+                "¿Cuál es el monto?",
+                "¿Quién es el pagador?",
+                "¿De qué banco es?",
+                "¿Cuál es la referencia?",
+              ];
+              track hint
+            ) {
+              <button
+                (click)="text.set(hint)"
+                class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all"
+              >
+                {{ hint }}
+              </button>
+            }
+          } @else {
+            @for (
+              hint of [
+                "Analiza este comprobante",
+                "Dame los insights",
+                "Buscar comprobantes banco BCP u otros",
+              ];
+              track hint
+            ) {
+              <button
+                (click)="text.set(hint)"
+                class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all"
+              >
+                {{ hint }}
+              </button>
+            }
           }
         </div>
       </div>
     }
+    @if (selectedVoucher() && chatState.messages().length !== 0) {
+      <div class="flex flex-wrap gap-2">
+        <button
+          (click)="text.set('¿Cuál es el monto?')"
+          class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all"
+        >
+          ¿Cuál es el monto?
+        </button>
 
+        <button
+          (click)="text.set('¿Quién es el pagador?')"
+          class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all"
+        >
+          ¿Quién es el pagador?
+        </button>
+
+        <button
+          (click)="text.set('¿De qué banco es?')"
+          class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all"
+        >
+          ¿De qué banco es?
+        </button>
+
+        <button
+          (click)="text.set('¿Cuál es la referencia?')"
+          class="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:border-violet-500/30 hover:text-violet-300 transition-all"
+        >
+          ¿Cuál es la referencia?
+        </button>
+      </div>
+    }
     @for (msg of chatState.messages(); track msg.id) {
-
-      <!-- USER -->
-      @if (msg.role === 'USER') {
+      @if (msg.role === "USER") {
         <div class="flex justify-end">
           <div class="max-w-[70%]">
             <div class="bg-violet-600 rounded-2xl rounded-tr-sm px-4 py-3">
-              <p class="text-sm text-white leading-relaxed">{{ msg.content }}</p>
+              <p class="text-sm text-white leading-relaxed">
+                {{
+                  msg.content.includes("[Contexto:")
+                    ? msg.content.split("]\n")[1]
+                    : msg.content
+                }}
+              </p>
             </div>
             <p class="text-[10px] text-gray-600 text-right mt-1.5">
-              {{ msg.timestamp | date:'h:mm a' }}
+              {{ msg.timestamp | date: "h:mm a" }}
             </p>
           </div>
         </div>
       }
 
-      <!-- ASSISTANT -->
-      @if (msg.role === 'ASSISTANT') {
+      @if (msg.role === "ASSISTANT") {
         <div class="flex gap-3">
-          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 mt-0.5 shadow-md shadow-violet-500/20">
-            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          <div
+            class="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 mt-0.5 shadow-md shadow-violet-500/20"
+          >
+            <svg
+              class="w-3.5 h-3.5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
             </svg>
           </div>
           <div class="max-w-[75%]">
-            <!-- Loading -->
             @if (msg.isLoading) {
-              <div class="bg-white/5 border border-white/8 rounded-2xl rounded-tl-sm px-4 py-3.5">
+              <div
+                class="bg-white/5 border border-white/8 rounded-2xl rounded-tl-sm px-4 py-3.5"
+              >
                 <div class="flex gap-1 items-center">
-                  <div class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce" style="animation-delay:0ms"></div>
-                  <div class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce" style="animation-delay:150ms"></div>
-                  <div class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce" style="animation-delay:300ms"></div>
+                  <div
+                    class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce"
+                    style="animation-delay: 0ms"
+                  ></div>
+                  <div
+                    class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce"
+                    style="animation-delay: 150ms"
+                  ></div>
+                  <div
+                    class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce"
+                    style="animation-delay: 300ms"
+                  ></div>
                 </div>
               </div>
             } @else {
-              <div class="bg-white/5 border border-white/8 rounded-2xl rounded-tl-sm px-4 py-3">
-                <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{{ msg.content }}</p>
+              <div
+                class="bg-white/5 border border-white/8 rounded-2xl rounded-tl-sm px-4 py-3"
+              >
+                <p
+                  class="text-sm text-gray-200 leading-relaxed whitespace-pre-line"
+                >
+                  {{ msg.content }}
+                </p>
 
-                <!-- Voucher card -->
-                @if (msg.voucherAnalyzed) {
-                  <div class="mt-3 p-3 rounded-xl bg-white/5 border border-violet-500/20">
-                    <div class="flex items-center gap-2 mb-2">
-                      <div class="w-5 h-5 rounded-md bg-violet-500/20 flex items-center justify-center">
-                        <svg class="w-3 h-3 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <!-- 
+                  FIX ɵassertType: en lugar de @if (x; as y) usamos getVoucher(msg)
+                  que devuelve Voucher | null con tipo concreto, evitando el bug del compilador.
+                -->
+                @if (getVoucher(msg); as voucher) {
+                  <div
+                    class="mt-3 rounded-xl bg-white/5 border border-violet-500/20 overflow-hidden"
+                  >
+                    <div
+                      class="flex items-center justify-between px-3 py-2 border-b border-white/5"
+                    >
+                      <div class="flex items-center gap-2">
+                        <div
+                          class="w-5 h-5 rounded-md bg-violet-500/20 flex items-center justify-center"
+                        >
+                          <svg
+                            class="w-3 h-3 text-violet-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                        <span
+                          class="text-[10px] font-semibold text-violet-400 tracking-wide uppercase"
+                        >
+                          Comprobante Guardado
+                        </span>
                       </div>
-                      <span class="text-[10px] font-semibold text-violet-400 tracking-wide uppercase">Comprobante Analizado</span>
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="text-[9px] font-semibold px-2 py-0.5 rounded-full border"
+                          [class]="getStatusClass(voucher.status)"
+                        >
+                          {{ getStatusLabel(voucher.status) }}
+                        </span>
+                        <button
+                          (click)="toggleRawJson(voucher.id)"
+                          class="text-[9px] px-2 py-0.5 rounded-md border transition-colors"
+                          [class]="
+                            showRawJson() === voucher.id
+                              ? 'bg-amber-400/10 border-amber-400/30 text-amber-400'
+                              : 'bg-white/5 border-white/10 text-gray-500 hover:text-gray-300'
+                          "
+                        >
+                          {{
+                            showRawJson() === voucher.id
+                              ? "Ocultar JSON"
+                              : "Ver JSON"
+                          }}
+                        </button>
+                      </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-                      <div>
-                        <span class="text-gray-600">Pagador</span>
-                        <p class="text-gray-300 font-medium truncate">{{ msg.voucherAnalyzed.payer }}</p>
+
+                    @if (showRawJson() !== voucher.id) {
+                      <div class="grid grid-cols-2 gap-1.5 text-[11px] p-3">
+                        <div>
+                          <span class="text-gray-600">Pagador</span>
+                          <p class="text-gray-300 font-medium truncate">
+                            {{ voucher.payer }}
+                          </p>
+                        </div>
+                        <div>
+                          <span class="text-gray-600">Receptor</span>
+                          <p class="text-gray-300 font-medium truncate">
+                            {{ voucher.payee }}
+                          </p>
+                        </div>
+                        <div>
+                          <span class="text-gray-600">Monto</span>
+                          <p class="text-emerald-400 font-bold">
+                            {{ voucher.currency }}
+                            {{ voucher.amount | number: "1.2-2" }}
+                          </p>
+                        </div>
+                        <div>
+                          <span class="text-gray-600">Banco</span>
+                          <p class="text-gray-300 font-medium">
+                            {{ voucher.bankName }}
+                          </p>
+                        </div>
+                        <div>
+                          <span class="text-gray-600">Fecha</span>
+                          <p class="text-gray-300">
+                            {{ voucher.paymentDate | date: "dd/MM/yyyy" }}
+                          </p>
+                        </div>
+                        <div>
+                          <span class="text-gray-600">Referencia</span>
+                          <p
+                            class="text-gray-400 font-mono text-[10px] truncate"
+                          >
+                            {{ voucher.referenceNumber }}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <span class="text-gray-600">Receptor</span>
-                        <p class="text-gray-300 font-medium truncate">{{ msg.voucherAnalyzed.payee }}</p>
+                    } @else {
+                      <div class="p-3">
+                        <pre
+                          class="text-[10px] text-amber-300/80 font-mono leading-relaxed overflow-x-auto whitespace-pre-wrap break-all"
+                          >{{ formatJson(voucher) }}</pre
+                        >
                       </div>
-                      <div>
-                        <span class="text-gray-600">Monto</span>
-                        <p class="text-emerald-400 font-bold">{{ msg.voucherAnalyzed.currency }} {{ msg.voucherAnalyzed.amount | number:'1.2-2' }}</p>
-                      </div>
-                      <div>
-                        <span class="text-gray-600">Banco</span>
-                        <p class="text-gray-300 font-medium">{{ msg.voucherAnalyzed.bankName }}</p>
-                      </div>
-                    </div>
+                    }
                   </div>
                 }
               </div>
-              <p class="text-[10px] text-gray-600 mt-1.5">{{ msg.timestamp | date:'h:mm a' }}</p>
+              <p class="text-[10px] text-gray-600 mt-1.5">
+                {{ msg.timestamp | date: "h:mm a" }}
+              </p>
             }
           </div>
         </div>
       }
     }
+
     <div #msgEnd></div>
   </div>
 
-  <!-- Input area -->
+  <!-- diseño del input -->
   <div class="px-6 pb-6 pt-3 border-t border-white/5">
-
-    <!-- File preview -->
     @if (pendingFile()) {
-      <div class="flex items-center gap-2 mb-2 px-3 py-2 bg-violet-500/10 border border-violet-500/20 rounded-xl">
-        <svg class="w-4 h-4 text-violet-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+      <div
+        class="flex items-center gap-2 mb-2 px-3 py-2 bg-violet-500/10 border border-violet-500/20 rounded-xl"
+      >
+        <svg
+          class="w-4 h-4 text-violet-400 shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+          />
         </svg>
-        <span class="text-[11px] text-violet-300 flex-1 truncate">{{ pendingFile()!.name }}</span>
-        <button (click)="clearFile()" class="text-gray-600 hover:text-gray-400 transition-colors">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        <span class="text-[11px] text-violet-300 flex-1 truncate">{{
+          pendingFile()!.name
+        }}</span>
+        <span class="text-[9px] text-violet-500 mr-2"
+          >Se validará antes de guardar</span
+        >
+        <button
+          (click)="clearFile()"
+          class="text-gray-600 hover:text-gray-400 transition-colors"
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
     }
 
     <div class="flex items-end gap-2">
-      <!-- Attach -->
-      <label class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer transition-colors shrink-0 border border-white/8">
-        <input type="file" class="hidden" accept=".pdf,image/*" (change)="onFileInput($event)"/>
-        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+      <label
+        class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer transition-colors shrink-0 border border-white/8"
+      >
+        <input
+          type="file"
+          class="hidden"
+          accept=".pdf,image/*"
+          (change)="onFileInput($event)"
+        />
+        <svg
+          class="w-4 h-4 text-gray-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+          />
         </svg>
       </label>
 
-      <!-- Textarea -->
       <textarea
         rows="1"
         [value]="text()"
         (input)="text.set($any($event.target).value)"
         (keydown)="onKeydown($event)"
         [placeholder]="placeholder()"
-        [disabled]="chatState.sending()"
+        [disabled]="chatState.sending() || extracting()"
         class="flex-1 bg-white/5 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-violet-500/50 transition-colors disabled:opacity-50 leading-relaxed"
-        style="min-height:40px;max-height:120px"
+        style="min-height: 40px; max-height: 120px"
       ></textarea>
 
-      <!-- Send -->
       <button
         (click)="send()"
-        [disabled]="chatState.sending() || (!text().trim() && !pendingFile())"
+        [disabled]="
+          chatState.sending() ||
+          extracting() ||
+          (!text().trim() && !pendingFile())
+        "
         class="w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0"
-        [class]="(text().trim() || pendingFile()) && !chatState.sending()
-          ? 'bg-violet-600 hover:bg-violet-500 shadow-lg shadow-violet-500/25'
-          : 'bg-white/5 cursor-not-allowed'"
+        [class]="
+          (text().trim() || pendingFile()) &&
+          !chatState.sending() &&
+          !extracting()
+            ? 'bg-violet-600 hover:bg-violet-500 shadow-lg shadow-violet-500/25'
+            : 'bg-white/5 cursor-not-allowed'
+        "
       >
-        @if (chatState.sending()) {
-          <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+        @if (chatState.sending() || extracting()) {
+          <div
+            class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
+          ></div>
         } @else {
-          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          <svg
+            class="w-4 h-4 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+            />
           </svg>
         }
       </button>
     </div>
-
-    <!-- Context badge -->
-    @if (vaultState.selected()) {
-      <div class="mt-2 flex items-center gap-1.5">
-        <svg class="w-3 h-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <span class="text-[10px] text-gray-600">
-          Comprobante seleccionado: {{ vaultState.selected()!.payee || vaultState.selected()!.payer }} — {{ vaultState.selected()!.currency }} {{ vaultState.selected()!.amount | number:'1.2-2' }}
-        </span>
-      </div>
-    }
   </div>
 </div>
