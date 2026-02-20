@@ -153,6 +153,11 @@ src/
 
 ---
 
+
+> **Repositorio del Modelo ML:** [AI-Payment-Analyzer-ML](https://github.com/ISAASPWDI/AI-Payment-Analyzer-ML)
+
+> **Repositorio del Backend:** [AI-Payment-Analysis-Backend](https://github.com/ISAASPWDI/ai-payment-analysis-backend)
+
 ## Cómo ejecutar el proyecto
 
 ### Prerrequisitos
