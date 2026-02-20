@@ -13,18 +13,18 @@ import {
 export class SocketService implements OnDestroy {
   private socket: Socket | null = null;
 
-  private readonly chunkSubject  = new Subject<WsChatChunkEvent>();
-  private readonly doneSubject   = new Subject<WsChatDoneEvent>();
-  private readonly errorSubject  = new Subject<WsChatErrorEvent>();
+  private readonly chunkSubject = new Subject<WsChatChunkEvent>();
+  private readonly doneSubject = new Subject<WsChatDoneEvent>();
+  private readonly errorSubject = new Subject<WsChatErrorEvent>();
 
-  readonly chunk$: Observable<WsChatChunkEvent>  = this.chunkSubject.asObservable();
-  readonly done$:  Observable<WsChatDoneEvent>   = this.doneSubject.asObservable();
-  readonly error$: Observable<WsChatErrorEvent>  = this.errorSubject.asObservable();
+  readonly chunk$: Observable<WsChatChunkEvent> = this.chunkSubject.asObservable();
+  readonly done$: Observable<WsChatDoneEvent> = this.doneSubject.asObservable();
+  readonly error$: Observable<WsChatErrorEvent> = this.errorSubject.asObservable();
 
   connect(): void {
     if (this.socket?.connected) return;
 
-    this.socket = io(`${environment.apiUrl}/chat`, {
+    this.socket = io(`${environment.wsUrl}/chat`, {
       transports: ['websocket'],
     });
 
